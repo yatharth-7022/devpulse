@@ -74,7 +74,7 @@ export default function LandingPage() {
 
             <h1 className="mt-6 text-balance text-5xl font-semibold tracking-tight md:text-7xl">
               Your code,{" "}
-              <span className="bg-gradient-to-br from-primary via-primary to-primary/40 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-br from-green-400 to-green-600 bg-clip-text text-transparent">
                 measured
               </span>
               .
@@ -181,7 +181,7 @@ export default function LandingPage() {
                 <Reveal
                   key={s.step}
                   delay={i * 0.12}
-                  className="relative rounded-2xl border border-border/60 bg-background/70 p-8 backdrop-blur"
+                  className="relative rounded-2xl bg-background/70 p-8 backdrop-blur"
                 >
                   <span className="text-xs font-mono text-primary/70">{s.step}</span>
                   <div className="mt-4 flex h-11 w-11 items-center justify-center rounded-lg bg-primary/10 ring-1 ring-primary/20">
@@ -208,9 +208,9 @@ export default function LandingPage() {
           </Reveal>
 
           <Reveal delay={0.1} className="mt-14">
-            <div className="relative overflow-hidden rounded-2xl border border-border/60 bg-background/70 p-1 backdrop-blur-xl shadow-[0_0_120px_-20px_rgba(34,197,94,0.25)]">
+            <div className="relative overflow-hidden rounded-2xl bg-background/70 p-1 backdrop-blur-xl shadow-[0_0_120px_-20px_rgba(34,197,94,0.25)]">
               <div className="rounded-xl bg-gradient-to-b from-card/90 to-background/90 p-8">
-                <div className="flex items-center justify-between border-b border-border/40 pb-4">
+                <div className="flex items-center justify-between pb-4">
                   <div>
                     <div className="text-xs uppercase tracking-wider text-muted-foreground">This week</div>
                     <div className="mt-1 text-2xl font-semibold">Welcome back, Alex</div>
@@ -238,7 +238,7 @@ export default function LandingPage() {
                     { l: "Reviews", v: "21", d: "+18%" },
                     { l: "Focus hours", v: "22.4", d: "+4.1h" },
                   ].map((s) => (
-                    <div key={s.l} className="rounded-lg border border-border/40 bg-background/60 p-4">
+                    <div key={s.l} className="rounded-lg bg-background/60 p-4">
                       <div className="text-xs text-muted-foreground">{s.l}</div>
                       <div className="mt-1 flex items-baseline gap-2">
                         <div className="text-2xl font-semibold">{s.v}</div>
@@ -249,7 +249,7 @@ export default function LandingPage() {
                 </div>
 
                 <div className="mt-6 grid gap-4 md:grid-cols-3">
-                  <div className="rounded-lg border border-border/40 bg-background/60 p-5 md:col-span-2">
+                  <div className="rounded-lg bg-background/60 p-5 md:col-span-2">
                     <div className="flex items-center justify-between">
                       <div className="text-sm font-medium">Activity</div>
                       <div className="text-xs text-muted-foreground">Last 12 weeks</div>
@@ -264,7 +264,7 @@ export default function LandingPage() {
                       ))}
                     </div>
                   </div>
-                  <div className="rounded-lg border border-border/40 bg-background/60 p-5">
+                  <div className="rounded-lg bg-background/60 p-5">
                     <div className="text-sm font-medium">Top repos</div>
                     <div className="mt-4 space-y-3">
                       {[
@@ -328,7 +328,7 @@ export default function LandingPage() {
                 <Reveal
                   key={u.title}
                   delay={i * 0.1}
-                  className="rounded-2xl border border-border/60 bg-background/70 p-8 backdrop-blur"
+                  className="rounded-2xl bg-background/70 p-8 backdrop-blur"
                 >
                   <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-primary/10 ring-1 ring-primary/20">
                     <u.icon className="h-5 w-5 text-primary" />
@@ -382,7 +382,7 @@ export default function LandingPage() {
               <Reveal
                 key={t.name}
                 delay={i * 0.1}
-                className="rounded-2xl border border-border/60 bg-background/70 p-8 backdrop-blur"
+                className="rounded-2xl bg-background/70 p-8 backdrop-blur"
               >
                 <div className="flex gap-0.5 text-primary">
                   {Array.from({ length: 5 }).map((_, k) => (
@@ -390,7 +390,7 @@ export default function LandingPage() {
                   ))}
                 </div>
                 <p className="mt-5 text-sm leading-relaxed text-foreground/90">"{t.quote}"</p>
-                <div className="mt-6 flex items-center gap-3 border-t border-border/40 pt-5">
+                <div className="mt-6 flex items-center gap-3 pt-5">
                   <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/15 text-sm font-medium text-primary">
                     {t.name[0]}
                   </div>
@@ -447,10 +447,10 @@ export default function LandingPage() {
                 <Reveal
                   key={p.name}
                   delay={i * 0.1}
-                  className={`relative rounded-2xl border p-8 backdrop-blur ${
+                  className={`relative rounded-2xl p-8 backdrop-blur ${
                     p.highlight
-                      ? "border-primary/40 bg-background/80 shadow-[0_0_60px_-15px_rgba(34,197,94,0.35)]"
-                      : "border-border/60 bg-background/70"
+                      ? "bg-background/80 shadow-[0_0_60px_-15px_rgba(34,197,94,0.35)]"
+                      : "bg-background/70"
                   }`}
                 >
                   {p.highlight && (
@@ -502,7 +502,7 @@ export default function LandingPage() {
                 {["SOC 2 Type II", "GDPR ready", "Read-only OAuth", "EU data residency"].map((b) => (
                   <span
                     key={b}
-                    className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-background/60 px-3 py-1 text-xs text-muted-foreground backdrop-blur"
+                    className="inline-flex items-center gap-2 rounded-full bg-background/60 px-3 py-1 text-xs text-muted-foreground backdrop-blur"
                   >
                     <Shield className="h-3 w-3 text-primary" />
                     {b}
@@ -521,7 +521,7 @@ export default function LandingPage() {
                 ].map((c) => (
                   <div
                     key={c.title}
-                    className="rounded-xl border border-border/60 bg-background/70 p-5 backdrop-blur"
+                    className="rounded-xl bg-background/70 p-5 backdrop-blur"
                   >
                     <c.icon className="h-5 w-5 text-primary" />
                     <div className="mt-3 text-sm font-medium">{c.title}</div>
@@ -574,7 +574,7 @@ export default function LandingPage() {
                   <AccordionItem
                     key={item.q}
                     value={`item-${i}`}
-                    className="rounded-xl border border-border/60 bg-background/70 px-5 backdrop-blur"
+                    className="rounded-xl bg-background/70 px-5 backdrop-blur"
                   >
                     <AccordionTrigger className="text-left hover:no-underline">
                       {item.q}
@@ -595,7 +595,7 @@ export default function LandingPage() {
           <Reveal className="relative z-10 mx-auto max-w-3xl px-6 py-32 text-center">
             <h2 className="text-4xl font-semibold tracking-tight md:text-6xl">
               Stop guessing.{" "}
-              <span className="bg-gradient-to-br from-primary to-primary/40 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-br from-green-400 to-green-600 bg-clip-text text-transparent">
                 Start measuring.
               </span>
             </h2>
@@ -649,7 +649,7 @@ export default function LandingPage() {
                 </div>
               ))}
             </div>
-            <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-border/40 pt-6 text-sm text-muted-foreground md:flex-row">
+            <div className="mt-12 flex flex-col items-center justify-between gap-4 pt-6 text-sm text-muted-foreground md:flex-row">
               <span>© {new Date().getFullYear()} Pulse. Built for builders.</span>
               <div className="flex gap-6">
                 <a href="#" className="hover:text-foreground transition-colors">Privacy</a>
