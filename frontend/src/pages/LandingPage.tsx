@@ -1,3 +1,6 @@
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuthContext } from "@/context/AuthContext";
 import { FallingPattern } from "@/components/ui/falling-pattern";
 import { Button } from "@/components/ui/button";
 import {
@@ -27,6 +30,19 @@ import {
 } from "@/components/ui/accordion";
 
 export default function LandingPage() {
+  const { user, loading } = useAuthContext()
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    if (!loading && user) {
+      navigate('/dashboard', { replace: true })
+    }
+  }, [user, loading, navigate])
+
+  const handleLogin = () => {
+    window.location.href = '/auth/github'
+  }
+
   return (
     <div className="dark relative min-h-screen overflow-hidden bg-background text-foreground antialiased">
       {/* GLOBAL FALLING PATTERN — fixed behind all content */}
@@ -56,7 +72,7 @@ export default function LandingPage() {
               <a href="#pricing" className="hover:text-foreground transition-colors">Pricing</a>
               <a href="#faq" className="hover:text-foreground transition-colors">FAQ</a>
             </div>
-            <Button size="sm" className="gap-2 bg-primary text-primary-foreground hover:bg-primary/90">
+            <Button size="sm" className="gap-2 bg-primary text-primary-foreground hover:bg-primary/90" onClick={handleLogin}>
               <GitBranch className="h-4 w-4" />
               Sign in
             </Button>
@@ -86,7 +102,7 @@ export default function LandingPage() {
             </p>
 
             <div className="mt-10 flex flex-col items-center gap-3 sm:flex-row">
-              <Button size="lg" className="gap-2 bg-primary text-primary-foreground hover:bg-primary/90">
+              <Button size="lg" className="gap-2 bg-primary text-primary-foreground hover:bg-primary/90" onClick={handleLogin}>
                 <GitBranch className="h-5 w-5" />
                 Continue with GitHub
               </Button>
@@ -603,7 +619,7 @@ export default function LandingPage() {
               Connect GitHub in 10 seconds. See your first dashboard before your coffee gets cold.
             </p>
             <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
-              <Button size="lg" className="gap-2 bg-primary text-primary-foreground hover:bg-primary/90">
+              <Button size="lg" className="gap-2 bg-primary text-primary-foreground hover:bg-primary/90" onClick={handleLogin}>
                 <GitBranch className="h-5 w-5" />
                 Sign in with GitHub
               </Button>

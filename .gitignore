@@ -46,3 +46,4 @@ prisma/migrations/
 # Coverage
 coverage/
 .nyc_output/
+.gitnexus
