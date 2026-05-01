@@ -1,0 +1,63 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --radius: 0.625rem;
+  --background: 0 0% 100%;
+  --foreground: 229 25% 8%;
+  --card: 0 0% 100%;
+  --card-foreground: 229 25% 8%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 229 25% 8%;
+  --primary: 142 71% 45%;
+  --primary-foreground: 0 0% 6%;
+  --secondary: 220 13% 96%;
+  --secondary-foreground: 220 14% 46%;
+  --muted: 220 13% 96%;
+  --muted-foreground: 220 14% 46%;
+  --accent: 220 13% 96%;
+  --accent-foreground: 220 14% 46%;
+  --destructive: 0 84% 60%;
+  --destructive-foreground: 0 0% 98%;
+  --border: 220 13% 91%;
+  --input: 220 13% 91%;
+  --ring: 142 71% 45%;
+}
+
+.dark {
+  --background: 0 0% 0%;
+  --foreground: 220 9% 97%;
+  --card: 228 12% 13%;
+  --card-foreground: 220 9% 97%;
+  --popover: 228 12% 13%;
+  --popover-foreground: 220 9% 97%;
+  --primary: 142 71% 45%;
+  --primary-foreground: 0 0% 6%;
+  --secondary: 228 18% 20%;
+  --secondary-foreground: 220 9% 97%;
+  --muted: 228 18% 20%;
+  --muted-foreground: 228 14% 56%;
+  --accent: 228 18% 20%;
+  --accent-foreground: 220 9% 97%;
+  --destructive: 14 100% 57%;
+  --destructive-foreground: 220 9% 97%;
+  --border: 228 15% 22%;
+  --input: 228 15% 22%;
+  --ring: 228 8% 46%;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  padding: 0;
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
