@@ -68,4 +68,5 @@ export interface DashboardStats {
     lastMonth: { commits: number; activeDays: number }
   }
   activeTime: Array<{ weekday: number; hour: number; count: number }>
+  lastSyncedAt: string | null
 }

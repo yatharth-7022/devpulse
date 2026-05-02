@@ -11,7 +11,9 @@
       "Bash(grep -E \"\\\\.\\(md|txt\\)$\")",
       "Bash(npm ls *)",
       "Bash(curl -s -o /dev/null -w \"%{http_code} %{redirect_url}\" http://localhost:8000/auth/github)",
-      "Bash(npx gitnexus *)"
+      "Bash(npx gitnexus *)",
+      "Bash(curl -s http://localhost:3001)",
+      "Bash(npx tailwindcss *)"
     ]
   }
 }

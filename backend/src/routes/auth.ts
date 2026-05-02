@@ -3,6 +3,8 @@ import axios from 'axios'
 import jwt from 'jsonwebtoken'
 import { prisma } from '@/lib/prisma'
 import { requireAuth } from '@/middleware/auth'
+import { syncUser } from '@/services/syncService'
+import { logger } from '@/lib/logger'
 
 const router = Router()
 
@@ -74,6 +76,8 @@ router.get('/github/callback', async (req: Request, res: Response) => {
       JWT_SECRET,
       { expiresIn: JWT_EXPIRES_IN }
     )
+    // fire-and-forget — don't block redirect on sync
+    syncUser(user.id).catch((err) => logger.error({ err }, 'initial sync failed'))
 
     const isProd = process.env.NODE_ENV === 'production'
     res.cookie('token', token, {
@@ -85,7 +89,7 @@ router.get('/github/callback', async (req: Request, res: Response) => {
 
     return res.redirect(`${FRONTEND_URL}/dashboard`)
   } catch (err) {
-    console.error('[auth] github callback error:', err)
+    logger.error({ err }, 'github callback error')
     return res.redirect(`${FRONTEND_URL}/auth/callback?error=server_error`)
   }
 })
