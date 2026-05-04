@@ -34,6 +34,7 @@ router.get('/dashboard/stats', requireAuth, async (req: Request, res: Response) 
     topRepos,
     languages,
     lastSync,
+    lastSyncAny,
   ] = await Promise.all([
     // 365-day heatmap source
     prisma.commit.findMany({
@@ -67,11 +68,17 @@ router.get('/dashboard/stats', requireAuth, async (req: Request, res: Response) 
       where: { repository: { userId } },
       select: { language: true, bytes: true },
     }),
-    // last sync log
+    // last successful sync
     prisma.syncLog.findFirst({
       where: { userId, status: 'SUCCESS' },
       orderBy: { completedAt: 'desc' },
       select: { completedAt: true },
+    }),
+    // most recent sync of any status (for error reporting)
+    prisma.syncLog.findFirst({
+      where: { userId },
+      orderBy: { startedAt: 'desc' },
+      select: { status: true, errorDetails: true },
     }),
   ])
 
@@ -201,6 +208,8 @@ router.get('/dashboard/stats', requireAuth, async (req: Request, res: Response) 
     },
     activeTime,
     lastSyncedAt: lastSync?.completedAt ?? null,
+    lastSyncStatus: lastSyncAny?.status ?? null,
+    lastSyncError: lastSyncAny?.errorDetails ?? null,
   })
 })
 

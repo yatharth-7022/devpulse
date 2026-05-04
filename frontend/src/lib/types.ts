@@ -69,4 +69,6 @@ export interface DashboardStats {
   }
   activeTime: Array<{ weekday: number; hour: number; count: number }>
   lastSyncedAt: string | null
+  lastSyncStatus: 'SUCCESS' | 'FAILED' | 'RUNNING' | null
+  lastSyncError: string | null
 }

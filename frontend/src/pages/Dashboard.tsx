@@ -2,11 +2,13 @@ import { type ReactNode, useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import {
   Activity,
+  AlertCircle,
   Calendar,
   Flame,
   GitCommit,
   LogOut,
   RefreshCw,
+  RotateCcw,
   TrendingDown,
   TrendingUp,
   Trophy,
@@ -19,9 +21,9 @@ import { Heatmap } from "@/components/dashboard/heatmap";
 import { LanguageChart } from "@/components/dashboard/language-chart";
 import { RepoTable } from "@/components/dashboard/repo-table";
 import { ActiveTimeGrid } from "@/components/dashboard/active-time-grid";
+import Loader from "@/components/ui/loader-4";
 import { useAuthContext } from "@/context/AuthContext";
 import { useDashboardStats } from "@/hooks/useDashboardStats";
-import { mockStats } from "@/lib/mock-dashboard";
 import api from "@/lib/api";
 
 function timeAgo(iso: string): string {
@@ -95,9 +97,85 @@ function SkeletonBlock({ className }: { className?: string }) {
   return <div className={`animate-pulse rounded bg-white/[0.04] ${className ?? ""}`} />;
 }
 
+function EmptyState({ onSync, syncing }: { onSync: () => void; syncing: boolean }) {
+  return (
+    <div className="flex min-h-[60vh] flex-col items-center justify-center gap-6 text-center">
+      <Loader />
+      <div className="space-y-2">
+        <h2 className="text-xl font-semibold tracking-tight text-foreground">
+          Syncing your GitHub activity
+        </h2>
+        <p className="max-w-sm text-sm text-muted-foreground">
+          We're pulling your repos and commit history. First sync takes 1–3 minutes depending on repo count.
+        </p>
+      </div>
+      <Button
+        size="sm"
+        variant="outline"
+        className="gap-2 border-white/10 bg-white/[0.02] text-foreground hover:bg-white/[0.06]"
+        disabled={syncing}
+        onClick={onSync}
+      >
+        <RefreshCw className={`h-3.5 w-3.5 ${syncing ? "animate-spin" : ""}`} />
+        {syncing ? "Syncing…" : "Sync manually"}
+      </Button>
+    </div>
+  );
+}
+
+function ErrorState({
+  message,
+  isAuthError,
+  onRetry,
+}: {
+  message: string | null;
+  isAuthError: boolean;
+  onRetry: () => void;
+}) {
+  return (
+    <div className="flex min-h-[60vh] flex-col items-center justify-center gap-6 text-center">
+      <div className="flex h-14 w-14 items-center justify-center rounded-full border border-red-500/30 bg-red-500/10">
+        <AlertCircle className="h-7 w-7 text-red-400" />
+      </div>
+      <div className="space-y-2">
+        <h2 className="text-xl font-semibold tracking-tight text-foreground">
+          {isAuthError ? "GitHub access lost" : "Something went wrong"}
+        </h2>
+        <p className="max-w-sm text-sm text-muted-foreground">
+          {isAuthError
+            ? "GitHub access was revoked or expired. Reconnect your account to resume syncing."
+            : (message ?? "We couldn't load your stats. Check your connection and try again.")}
+        </p>
+      </div>
+      <div className="flex gap-3">
+        {isAuthError ? (
+          <Button
+            size="sm"
+            variant="outline"
+            className="gap-2 border-white/10 bg-white/[0.02] text-foreground hover:bg-white/[0.06]"
+            onClick={() => { window.location.href = "/auth/github" }}
+          >
+            Reconnect GitHub
+          </Button>
+        ) : (
+          <Button
+            size="sm"
+            variant="outline"
+            className="gap-2 border-white/10 bg-white/[0.02] text-foreground hover:bg-white/[0.06]"
+            onClick={onRetry}
+          >
+            <RotateCcw className="h-3.5 w-3.5" />
+            Try again
+          </Button>
+        )}
+      </div>
+    </div>
+  );
+}
+
 export default function Dashboard() {
   const { user, logout } = useAuthContext();
-  const { state: statsState, startPolling } = useDashboardStats();
+  const { state: statsState, refresh, startPolling } = useDashboardStats();
   const [syncing, setSyncing] = useState(false);
   const [syncError, setSyncError] = useState<string | null>(null);
 
@@ -108,7 +186,17 @@ export default function Dashboard() {
 
   const isLoading = statsState.status === "loading";
   const isEmpty = statsState.status === "empty";
+  const isError = statsState.status === "error";
   const stats = statsState.status === "ok" ? statsState.data : null;
+
+  // Auto-start polling on first empty state (sync likely running from OAuth)
+  const didAutoStart = useRef(false);
+  useEffect(() => {
+    if (isEmpty && !didAutoStart.current) {
+      didAutoStart.current = true;
+      startPolling(new Date(0).toISOString());
+    }
+  }, [isEmpty, startPolling]);
 
   // Clear syncing spinner once polling delivers fresh data
   const prevSyncedAt = useRef<string | null>(null);
@@ -128,7 +216,6 @@ export default function Dashboard() {
         stats?.lastSyncedAt ?? user?.lastSynced ?? new Date(0).toISOString();
       await api.post("/api/sync");
       startPolling(currentSyncedAt);
-      // polling will update state when done; clear syncing after 90s max
       setTimeout(() => setSyncing(false), 91_000);
     } catch (err: unknown) {
       const msg =
@@ -139,8 +226,13 @@ export default function Dashboard() {
     }
   }
 
-  // Fall back to mock data only while syncing for the first time (empty state)
-  const display = stats ?? (isEmpty ? mockStats : null);
+  const lastSyncError = stats?.lastSyncError ?? null;
+  const isAuthError =
+    isError ||
+    (lastSyncError !== null &&
+      (lastSyncError.toLowerCase().includes("401") ||
+        lastSyncError.toLowerCase().includes("unauthorized") ||
+        lastSyncError.toLowerCase().includes("revoked")));
 
   const syncedLabel = stats?.lastSyncedAt
     ? timeAgo(stats.lastSyncedAt)
@@ -177,7 +269,7 @@ export default function Dashboard() {
                 size="sm"
                 variant="outline"
                 className="gap-2 border-white/10 bg-white/[0.02] text-foreground hover:bg-white/[0.06]"
-                disabled={syncing || isLoading}
+                disabled={syncing || isLoading || isEmpty}
                 onClick={handleSync}
               >
                 <RefreshCw className={`h-3.5 w-3.5 ${syncing ? "animate-spin" : ""}`} />
@@ -196,130 +288,179 @@ export default function Dashboard() {
           </div>
         </header>
 
-        <main className="mx-auto max-w-7xl space-y-6 px-6 py-8">
-          {/* HEADING */}
-          <Reveal>
-            <div className="flex flex-wrap items-end justify-between gap-3">
-              <div>
-                <h1 className="text-2xl font-semibold tracking-tight text-foreground">
-                  Welcome back, {displayName.split(" ")[0]}
-                </h1>
-                <p className="mt-1 text-sm text-muted-foreground">
-                  {isEmpty
-                    ? "Your first sync is running — showing sample data in the meantime."
-                    : "Here's a snapshot of your coding activity across all repositories."}
-                </p>
-              </div>
-            </div>
-          </Reveal>
+        <main className="mx-auto max-w-7xl px-6 py-8">
+          {/* EMPTY STATE */}
+          {isEmpty && <EmptyState onSync={handleSync} syncing={syncing} />}
 
-          {/* OVERVIEW STATS */}
-          <Reveal delay={0.05}>
-            {isLoading ? (
+          {/* ERROR STATE */}
+          {isError && (
+            <ErrorState
+              message={(statsState as { status: "error"; message: string }).message}
+              isAuthError={isAuthError}
+              onRetry={refresh}
+            />
+          )}
+
+          {/* SYNC FAILED BANNER (data exists but last sync failed) */}
+          {stats && stats.lastSyncStatus === "FAILED" && (
+            <div className="mb-6 flex items-center gap-3 rounded-lg border border-red-500/20 bg-red-500/5 px-4 py-3">
+              <AlertCircle className="h-4 w-4 shrink-0 text-red-400" />
+              <div className="flex-1 text-sm">
+                <span className="font-medium text-red-400">Last sync failed.</span>{" "}
+                <span className="text-muted-foreground">
+                  {isAuthError
+                    ? "GitHub access may have been revoked. "
+                    : (stats.lastSyncError ?? "An error occurred. ")}
+                </span>
+              </div>
+              {isAuthError ? (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="shrink-0 border-red-500/20 text-red-400 hover:bg-red-500/10"
+                  onClick={() => { window.location.href = "/auth/github" }}
+                >
+                  Reconnect
+                </Button>
+              ) : (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="shrink-0 border-red-500/20 text-red-400 hover:bg-red-500/10"
+                  disabled={syncing}
+                  onClick={handleSync}
+                >
+                  Retry sync
+                </Button>
+              )}
+            </div>
+          )}
+
+          {/* FULL DASHBOARD — only when data exists */}
+          {stats && (
+            <div className="space-y-6">
+              {/* HEADING */}
+              <Reveal>
+                <div className="flex flex-wrap items-end justify-between gap-3">
+                  <div>
+                    <h1 className="text-2xl font-semibold tracking-tight text-foreground">
+                      Welcome back, {displayName.split(" ")[0]}
+                    </h1>
+                    <p className="mt-1 text-sm text-muted-foreground">
+                      Here's a snapshot of your coding activity across all repositories.
+                    </p>
+                  </div>
+                </div>
+              </Reveal>
+
+              {/* OVERVIEW STATS */}
+              <Reveal delay={0.05}>
+                <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+                  <StatCard label="Commits · 30d" value={stats.overview.totalCommits30d} icon={GitCommit} accent />
+                  <StatCard label="Active days · 30d" value={stats.overview.activeDays30d} icon={Calendar} hint="/ 30" />
+                  <StatCard label="Current streak" value={`${stats.overview.currentStreak}d`} icon={Flame} accent />
+                  <StatCard label="Longest streak" value={`${stats.overview.longestStreak}d`} icon={Trophy} />
+                </div>
+              </Reveal>
+
+              {/* HEATMAP */}
+              <Reveal delay={0.1}>
+                <Section title="Contribution heatmap" description="Daily commit activity over the last 365 days">
+                  <Heatmap data={stats.heatmap} />
+                </Section>
+              </Reveal>
+
+              {/* COMPARISON + LANGUAGES */}
+              <div className="grid gap-6 lg:grid-cols-2">
+                <Reveal delay={0.15}>
+                  <Section title="Monthly comparison" description="This month vs. last month">
+                    <div className="space-y-3">
+                      <ComparisonRow label="Commits" current={stats.comparison.thisMonth.commits} previous={stats.comparison.lastMonth.commits} />
+                      <ComparisonRow label="Active days" current={stats.comparison.thisMonth.activeDays} previous={stats.comparison.lastMonth.activeDays} />
+                    </div>
+                  </Section>
+                </Reveal>
+                <Reveal delay={0.2}>
+                  <Section title="Language breakdown" description="Distribution across your repositories">
+                    <LanguageChart data={stats.languages} />
+                  </Section>
+                </Reveal>
+              </div>
+
+              {/* TOP REPOS */}
+              <Reveal delay={0.15}>
+                <Section title="Top repositories" description="Your most active projects in the last 30 days">
+                  <RepoTable data={stats.topRepos} />
+                </Section>
+              </Reveal>
+
+              {/* ACTIVE TIME */}
+              <Reveal delay={0.2}>
+                <Section
+                  title="Active time heatmap"
+                  description="When you ship — by day of week and hour"
+                  action={
+                    <span className="hidden items-center gap-1.5 text-xs text-muted-foreground sm:inline-flex">
+                      <Activity className="h-3.5 w-3.5" />
+                      Local timezone
+                    </span>
+                  }
+                >
+                  <ActiveTimeGrid data={stats.activeTime} />
+                </Section>
+              </Reveal>
+
+              {/* SYNC STATUS */}
+              <Reveal delay={0.1}>
+                <Section title="Sync status" description="Data freshness and pipeline health">
+                  <div className="flex flex-wrap items-center justify-between gap-4">
+                    <div className="flex items-center gap-3">
+                      <span className="relative flex h-2.5 w-2.5">
+                        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-50" />
+                        <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-primary" />
+                      </span>
+                      <div>
+                        <div className="text-sm font-medium text-foreground">All systems healthy</div>
+                        <div className="text-xs text-muted-foreground">Last successful sync {syncedLabel}</div>
+                      </div>
+                    </div>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="gap-2 border-white/10 bg-white/[0.02] hover:bg-white/[0.06]"
+                      disabled={syncing}
+                      onClick={handleSync}
+                    >
+                      <RefreshCw className={`h-3.5 w-3.5 ${syncing ? "animate-spin" : ""}`} />
+                      {syncing ? "Syncing…" : "Manual sync"}
+                    </Button>
+                  </div>
+                </Section>
+              </Reveal>
+            </div>
+          )}
+
+          {/* LOADING SKELETONS */}
+          {isLoading && (
+            <div className="space-y-6">
               <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
                 {[...Array(4)].map((_, i) => (
                   <SkeletonBlock key={i} className="h-28" />
                 ))}
               </div>
-            ) : (
-              <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-                <StatCard label="Commits · 30d" value={display!.overview.totalCommits30d} icon={GitCommit} accent />
-                <StatCard label="Active days · 30d" value={display!.overview.activeDays30d} icon={Calendar} hint="/ 30" />
-                <StatCard label="Current streak" value={`${display!.overview.currentStreak}d`} icon={Flame} accent />
-                <StatCard label="Longest streak" value={`${display!.overview.longestStreak}d`} icon={Trophy} />
-              </div>
-            )}
-          </Reveal>
-
-          {/* HEATMAP */}
-          <Reveal delay={0.1}>
-            <Section title="Contribution heatmap" description="Daily commit activity over the last 365 days">
-              {isLoading ? <SkeletonBlock className="h-32" /> : <Heatmap data={display!.heatmap} />}
-            </Section>
-          </Reveal>
-
-          {/* COMPARISON + LANGUAGES */}
-          <div className="grid gap-6 lg:grid-cols-2">
-            <Reveal delay={0.15}>
-              <Section title="Monthly comparison" description="This month vs. last month">
-                {isLoading ? (
-                  <div className="space-y-3">
-                    <SkeletonBlock className="h-20" />
-                    <SkeletonBlock className="h-20" />
-                  </div>
-                ) : (
-                  <div className="space-y-3">
-                    <ComparisonRow label="Commits" current={display!.comparison.thisMonth.commits} previous={display!.comparison.lastMonth.commits} />
-                    <ComparisonRow label="Active days" current={display!.comparison.thisMonth.activeDays} previous={display!.comparison.lastMonth.activeDays} />
-                  </div>
-                )}
-              </Section>
-            </Reveal>
-            <Reveal delay={0.2}>
-              <Section title="Language breakdown" description="Distribution across your repositories">
-                {isLoading ? <SkeletonBlock className="h-40" /> : <LanguageChart data={display!.languages} />}
-              </Section>
-            </Reveal>
-          </div>
-
-          {/* TOP REPOS */}
-          <Reveal delay={0.15}>
-            <Section title="Top repositories" description="Your most active projects in the last 30 days">
-              {isLoading ? <SkeletonBlock className="h-40" /> : <RepoTable data={display!.topRepos} />}
-            </Section>
-          </Reveal>
-
-          {/* ACTIVE TIME */}
-          <Reveal delay={0.2}>
-            <Section
-              title="Active time heatmap"
-              description="When you ship — by day of week and hour"
-              action={
-                <span className="hidden items-center gap-1.5 text-xs text-muted-foreground sm:inline-flex">
-                  <Activity className="h-3.5 w-3.5" />
-                  Local timezone
-                </span>
-              }
-            >
-              {isLoading ? <SkeletonBlock className="h-40" /> : <ActiveTimeGrid data={display!.activeTime} />}
-            </Section>
-          </Reveal>
-
-          {/* SYNC STATUS */}
-          <Reveal delay={0.1}>
-            <Section title="Sync status" description="Data freshness and pipeline health">
-              <div className="flex flex-wrap items-center justify-between gap-4">
-                <div className="flex items-center gap-3">
-                  <span className="relative flex h-2.5 w-2.5">
-                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-50" />
-                    <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-primary" />
-                  </span>
-                  <div>
-                    <div className="text-sm font-medium text-foreground">
-                      {isEmpty ? "First sync in progress…" : "All systems healthy"}
-                    </div>
-                    <div className="text-xs text-muted-foreground">Last successful sync {syncedLabel}</div>
-                  </div>
+              <SkeletonBlock className="h-32" />
+              <div className="grid gap-6 lg:grid-cols-2">
+                <div className="space-y-3">
+                  <SkeletonBlock className="h-20" />
+                  <SkeletonBlock className="h-20" />
                 </div>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="gap-2 border-white/10 bg-white/[0.02] hover:bg-white/[0.06]"
-                  disabled={syncing || isLoading}
-                  onClick={handleSync}
-                >
-                  <RefreshCw className={`h-3.5 w-3.5 ${syncing ? "animate-spin" : ""}`} />
-                  {syncing ? "Syncing…" : "Manual sync"}
-                </Button>
+                <SkeletonBlock className="h-40" />
               </div>
-            </Section>
-          </Reveal>
-
-          {isEmpty && (
-            <p className="pt-4 text-center text-xs text-muted-foreground">
-              Showing sample data — real data appears after first sync completes.
-            </p>
+              <SkeletonBlock className="h-40" />
+              <SkeletonBlock className="h-40" />
+            </div>
           )}
+
           {syncError && (
             <p className="pt-2 text-center text-xs text-red-400">{syncError}</p>
           )}
