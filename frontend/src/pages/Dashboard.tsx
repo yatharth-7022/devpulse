@@ -259,8 +259,9 @@ export default function Dashboard() {
         <header className="border-b border-white/10 bg-black/40 backdrop-blur-md">
           <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-6 py-3">
             <div className="flex items-center gap-3">
-              <Link to="/" className="text-sm font-semibold tracking-tight text-foreground">
-                Pulse
+              <Link to="/" className="flex items-center gap-2 text-sm font-semibold tracking-tight text-foreground">
+                <img src="/devlens-logo.jpeg" alt="DevLens" className="h-6 w-6 rounded object-cover" />
+                DevLens
               </Link>
               <span className="hidden h-4 w-px bg-white/10 sm:block" />
               <Avatar className="h-8 w-8 ring-1 ring-white/10">

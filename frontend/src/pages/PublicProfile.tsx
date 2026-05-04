@@ -109,8 +109,9 @@ export default function PublicProfilePage() {
       {/* HEADER */}
       <header className="border-b border-white/10 bg-black/40 backdrop-blur-md">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-6 py-3">
-          <Link to="/" className="text-sm font-semibold tracking-tight text-foreground">
-            Pulse
+          <Link to="/" className="flex items-center gap-2 text-sm font-semibold tracking-tight text-foreground">
+            <img src="/devlens-logo.jpeg" alt="DevLens" className="h-6 w-6 rounded object-cover" />
+            DevLens
           </Link>
           <div className="flex items-center gap-3">
             {authUser ? (
@@ -153,7 +154,7 @@ export default function PublicProfilePage() {
             <div>
               <h2 className="text-xl font-semibold tracking-tight">Profile not found</h2>
               <p className="mt-1 text-sm text-muted-foreground">
-                No user named <span className="font-mono text-foreground">@{username}</span> exists on Pulse.
+                No user named <span className="font-mono text-foreground">@{username}</span> exists on DevLens.
               </p>
             </div>
             <Button
@@ -161,7 +162,7 @@ export default function PublicProfilePage() {
               className="mt-2"
               onClick={() => { window.location.href = `${import.meta.env.VITE_API_URL ?? ""}/auth/github` }}
             >
-              Join Pulse
+              Join DevLens
             </Button>
           </div>
         )}

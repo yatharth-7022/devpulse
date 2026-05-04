@@ -7,7 +7,6 @@ import {
   GitBranch,
   GitCommit,
   GitPullRequest,
-  Activity,
   TrendingUp,
   Code2,
   Zap,
@@ -61,10 +60,8 @@ export default function LandingPage() {
         <header className="relative z-20">
           <nav className="mx-auto flex max-w-7xl items-center justify-between px-6 py-6">
             <div className="flex items-center gap-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary/15 ring-1 ring-primary/30 backdrop-blur">
-                <Activity className="h-4 w-4 text-primary" />
-              </div>
-              <span className="text-lg font-semibold tracking-tight">Pulse</span>
+              <img src="/devlens-logo.jpeg" alt="DevLens" className="h-8 w-8 rounded-md object-cover" />
+              <span className="text-lg font-semibold tracking-tight">DevLens</span>
             </div>
             <div className="hidden items-center gap-8 text-sm text-muted-foreground md:flex">
               <a href="#features" className="hover:text-foreground transition-colors">Features</a>
@@ -147,7 +144,7 @@ export default function LandingPage() {
               Everything your standup wishes it had.
             </h2>
             <p className="mt-4 text-muted-foreground">
-              Pulse turns raw GitHub events into the metrics that actually matter — for you, not for managers.
+              DevLens turns raw GitHub events into the metrics that actually matter — for you, not for managers.
             </p>
           </Reveal>
 
@@ -156,7 +153,7 @@ export default function LandingPage() {
               { icon: GitCommit, title: "Commit cadence", body: "Visualize your shipping rhythm across days, weeks, and quarters. Spot burnout before it spots you." },
               { icon: GitPullRequest, title: "PR cycle time", body: "From first commit to merge — see exactly where reviews stall and which repos drag the team down." },
               { icon: Code2, title: "Language breakdown", body: "Discover where your hours actually go. TypeScript? Terraform? YAML? The truth might surprise you." },
-              { icon: TrendingUp, title: "Velocity trends", body: "Track output without counting lines. Pulse weighs complexity, refactors, and review depth." },
+              { icon: TrendingUp, title: "Velocity trends", body: "Track output without counting lines. DevLens weighs complexity, refactors, and review depth." },
               { icon: Zap, title: "Focus windows", body: "Detect your peak hours from real commit timestamps and protect them on your calendar." },
               { icon: Star, title: "Repo health", body: "Stars, issues, contributor diversity — a snapshot of every project you maintain in one place." },
             ].map((f, i) => (
@@ -191,7 +188,7 @@ export default function LandingPage() {
             <div className="mt-16 grid gap-8 md:grid-cols-3">
               {[
                 { icon: Plug, step: "01", title: "Connect GitHub", body: "OAuth in one click. We request read-only access to repository metadata — never your source code." },
-                { icon: Workflow, step: "02", title: "We sync silently", body: "Pulse indexes your commit history, PRs, reviews, and issue activity in the background. Usually under 60 seconds." },
+                { icon: Workflow, step: "02", title: "We sync silently", body: "DevLens indexes your commit history, PRs, reviews, and issue activity in the background. Usually under 60 seconds." },
                 { icon: BarChart3, step: "03", title: "Insights, forever", body: "Open your dashboard. Filter by repo, branch, or timeframe. Share read-only views with your team if you want." },
               ].map((s, i) => (
                 <Reveal
@@ -316,7 +313,7 @@ export default function LandingPage() {
             <Reveal className="mx-auto max-w-2xl text-center">
               <p className="text-xs font-medium uppercase tracking-widest text-primary">Built for</p>
               <h2 className="mt-3 text-4xl font-semibold tracking-tight md:text-5xl">
-                Whatever your role, Pulse fits.
+                Whatever your role, DevLens fits.
               </h2>
             </Reveal>
 
@@ -337,7 +334,7 @@ export default function LandingPage() {
                 {
                   icon: Sparkles,
                   title: "Engineering leaders",
-                  body: "Get high-signal trends without micromanaging. Pulse surfaces what's healthy and what needs attention.",
+                  body: "Get high-signal trends without micromanaging. DevLens surfaces what's healthy and what needs attention.",
                   points: ["Healthy-team scoring", "Burnout early signals", "Quarterly reports"],
                 },
               ].map((u, i) => (
@@ -378,13 +375,13 @@ export default function LandingPage() {
             {[
               {
                 quote:
-                  "Pulse showed me I was doing 80% of my real work between 9pm and 1am. I restructured my week and got my evenings back.",
+                  "DevLens showed me I was doing 80% of my real work between 9pm and 1am. I restructured my week and got my evenings back.",
                 name: "Maya R.",
                 role: "Staff Engineer, Linear",
               },
               {
                 quote:
-                  "We replaced three productivity tools and a half-baked spreadsheet with Pulse. The retros are finally based on something real.",
+                  "We replaced three productivity tools and a half-baked spreadsheet with DevLens. The retros are finally based on something real.",
                 name: "Diego F.",
                 role: "Engineering Manager, Ramp",
               },
@@ -511,7 +508,7 @@ export default function LandingPage() {
                 We never read your code.
               </h2>
               <p className="mt-4 text-muted-foreground">
-                Pulse only requests read-only access to repository metadata — commits, PR titles, review timestamps.
+                DevLens only requests read-only access to repository metadata — commits, PR titles, review timestamps.
                 Source code stays in GitHub, where it belongs. Revoke access in a single click, anytime.
               </p>
               <div className="mt-8 flex flex-wrap gap-3">
@@ -563,7 +560,7 @@ export default function LandingPage() {
               <Accordion type="single" collapsible className="space-y-3">
                 {[
                   {
-                    q: "Does Pulse read my source code?",
+                    q: "Does DevLens read my source code?",
                     a: "No. We request the minimum read-only OAuth scope needed to access commit metadata, PRs, reviews, and issues. Your source code never touches our servers.",
                   },
                   {
@@ -571,7 +568,7 @@ export default function LandingPage() {
                     a: "For most accounts, under 60 seconds. Very large monorepos with deep history can take a few minutes. You'll see live progress.",
                   },
                   {
-                    q: "Can I use Pulse on private and organization repos?",
+                    q: "Can I use DevLens on private and organization repos?",
                     a: "Yes. After signing in, you choose which repos and orgs to grant access to. You can change this at any time from your GitHub settings.",
                   },
                   {
@@ -639,10 +636,8 @@ export default function LandingPage() {
             <div className="grid gap-10 md:grid-cols-4">
               <div className="md:col-span-1">
                 <div className="flex items-center gap-2">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary/15 ring-1 ring-primary/30">
-                    <Activity className="h-4 w-4 text-primary" />
-                  </div>
-                  <span className="text-lg font-semibold tracking-tight">Pulse</span>
+                  <img src="/devlens-logo.jpeg" alt="DevLens" className="h-8 w-8 rounded-md object-cover" />
+                  <span className="text-lg font-semibold tracking-tight">DevLens</span>
                 </div>
                 <p className="mt-4 text-sm text-muted-foreground">
                   Developer productivity insights from the GitHub data you already have.
@@ -666,7 +661,7 @@ export default function LandingPage() {
               ))}
             </div>
             <div className="mt-12 flex flex-col items-center justify-between gap-4 pt-6 text-sm text-muted-foreground md:flex-row">
-              <span>© {new Date().getFullYear()} Pulse. Built for builders.</span>
+              <span>© {new Date().getFullYear()} DevLens. Built for builders.</span>
               <div className="flex gap-6">
                 <a href="#" className="hover:text-foreground transition-colors">Privacy</a>
                 <a href="#" className="hover:text-foreground transition-colors">Terms</a>
