@@ -40,8 +40,8 @@ pnpm-debug.log*
 ._*
 Thumbs.db
 
-# Prisma
-prisma/migrations/
+# Prisma — migrations must be committed for prisma migrate deploy in prod
+# prisma/migrations/
 
 # Coverage
 coverage/
