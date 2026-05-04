@@ -4,11 +4,13 @@ import {
   Activity,
   AlertCircle,
   Calendar,
+  Check,
   Flame,
   GitCommit,
   LogOut,
   RefreshCw,
   RotateCcw,
+  Share2,
   TrendingDown,
   TrendingUp,
   Trophy,
@@ -178,6 +180,7 @@ export default function Dashboard() {
   const { state: statsState, refresh, startPolling } = useDashboardStats();
   const [syncing, setSyncing] = useState(false);
   const [syncError, setSyncError] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
 
   const displayName = user?.displayName ?? user?.username ?? "Developer";
   const avatarUrl = user?.avatarUrl ?? "";
@@ -224,6 +227,14 @@ export default function Dashboard() {
       setSyncError(msg);
       setSyncing(false);
     }
+  }
+
+  function handleShare() {
+    const url = `${window.location.origin}/u/${username}`;
+    navigator.clipboard.writeText(url).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
   }
 
   const lastSyncError = stats?.lastSyncError ?? null;
@@ -274,6 +285,19 @@ export default function Dashboard() {
               >
                 <RefreshCw className={`h-3.5 w-3.5 ${syncing ? "animate-spin" : ""}`} />
                 {syncing ? "Syncing…" : "Sync"}
+              </Button>
+              <Button
+                size="sm"
+                variant="outline"
+                className="gap-2 border-white/10 bg-white/[0.02] text-foreground hover:bg-white/[0.06]"
+                onClick={handleShare}
+                disabled={!username}
+              >
+                {copied ? (
+                  <><Check className="h-3.5 w-3.5 text-primary" />Copied!</>
+                ) : (
+                  <><Share2 className="h-3.5 w-3.5" />Share</>
+                )}
               </Button>
               <Button
                 size="sm"

@@ -53,6 +53,15 @@ export interface SyncLog {
   completedAt: string | null
 }
 
+export interface PublicProfile {
+  user: {
+    username: string
+    displayName: string | null
+    avatarUrl: string | null
+  }
+  stats: DashboardStats
+}
+
 export interface DashboardStats {
   overview: {
     totalCommits30d: number
@@ -69,6 +78,6 @@ export interface DashboardStats {
   }
   activeTime: Array<{ weekday: number; hour: number; count: number }>
   lastSyncedAt: string | null
-  lastSyncStatus: 'SUCCESS' | 'FAILED' | 'RUNNING' | null
+  lastSyncStatus: 'SUCCESS' | 'FAILED' | 'RUNNING' | 'PENDING' | null
   lastSyncError: string | null
 }

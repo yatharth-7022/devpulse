@@ -4,6 +4,7 @@ import { AuthProvider, useAuthContext } from './context/AuthContext'
 import LandingPage from './pages/LandingPage'
 import AuthCallback from './pages/AuthCallback'
 import Dashboard from './pages/Dashboard'
+import PublicProfile from './pages/PublicProfile'
 
 function ProtectedRoute({ children }: { children: ReactNode }) {
   const { user, loading } = useAuthContext()
@@ -25,6 +26,7 @@ function AppRoutes() {
           </ProtectedRoute>
         }
       />
+      <Route path="/u/:username" element={<PublicProfile />} />
       <Route path="*" element={null} />
     </Routes>
   )
