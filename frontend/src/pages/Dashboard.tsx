@@ -230,7 +230,8 @@ export default function Dashboard() {
   }
 
   function handleShare() {
-    const url = `${window.location.origin}/u/${username}`;
+    const base = import.meta.env.VITE_APP_URL ?? window.location.origin;
+    const url = `${base}/u/${username}`;
     navigator.clipboard.writeText(url).then(() => {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);

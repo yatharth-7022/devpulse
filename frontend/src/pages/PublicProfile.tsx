@@ -126,7 +126,7 @@ export default function PublicProfilePage() {
               <Button
                 size="sm"
                 className="gap-2"
-                onClick={() => { window.location.href = "/auth/github" }}
+                onClick={() => { window.location.href = `${import.meta.env.VITE_API_URL ?? ""}/auth/github` }}
               >
                 Sign up with GitHub
               </Button>
@@ -159,7 +159,7 @@ export default function PublicProfilePage() {
             <Button
               size="sm"
               className="mt-2"
-              onClick={() => { window.location.href = "/auth/github" }}
+              onClick={() => { window.location.href = `${import.meta.env.VITE_API_URL ?? ""}/auth/github` }}
             >
               Join Pulse
             </Button>
@@ -253,7 +253,7 @@ export default function PublicProfilePage() {
                 </p>
                 <Button
                   className="mt-5 gap-2"
-                  onClick={() => { window.location.href = "/auth/github" }}
+                  onClick={() => { window.location.href = `${import.meta.env.VITE_API_URL ?? ""}/auth/github` }}
                 >
                   Sign up with GitHub
                 </Button>
