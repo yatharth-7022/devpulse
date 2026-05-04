@@ -83,7 +83,7 @@ router.get('/github/callback', async (req: Request, res: Response) => {
     res.cookie('token', token, {
       httpOnly: true,
       secure: isProd,
-      sameSite: isProd ? 'strict' : 'lax',
+      sameSite: isProd ? 'none' : 'lax', // 'none' required for cross-domain (frontend ↔ backend on different domains)
       maxAge: 7 * 24 * 60 * 60 * 1000,
     })
 
@@ -117,7 +117,12 @@ router.get('/me', requireAuth, async (req: Request, res: Response) => {
 })
 
 router.post('/logout', (_req: Request, res: Response) => {
-  res.clearCookie('token')
+  const isProd = process.env.NODE_ENV === 'production'
+  res.clearCookie('token', {
+    httpOnly: true,
+    secure: isProd,
+    sameSite: isProd ? 'none' : 'lax',
+  })
   res.json({ ok: true })
 })
 
