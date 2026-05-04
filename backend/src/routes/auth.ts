@@ -79,15 +79,7 @@ router.get('/github/callback', async (req: Request, res: Response) => {
     // fire-and-forget — don't block redirect on sync
     syncUser(user.id).catch((err) => logger.error({ err }, 'initial sync failed'))
 
-    const isProd = process.env.NODE_ENV === 'production'
-    res.cookie('token', token, {
-      httpOnly: true,
-      secure: isProd,
-      sameSite: isProd ? 'none' : 'lax', // 'none' required for cross-domain (frontend ↔ backend on different domains)
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-    })
-
-    return res.redirect(`${FRONTEND_URL}/dashboard`)
+    return res.redirect(`${FRONTEND_URL}/auth/callback?token=${token}`)
   } catch (err) {
     logger.error({ err }, 'github callback error')
     return res.redirect(`${FRONTEND_URL}/auth/callback?error=server_error`)

@@ -24,6 +24,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   async function logout() {
     await api.post('/auth/logout').catch(() => null)
+    localStorage.removeItem('auth_token')
     setUser(null)
     window.location.href = '/'
   }
