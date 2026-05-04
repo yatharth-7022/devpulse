@@ -7,6 +7,7 @@ import { logger } from '@/lib/logger'
 import { prisma } from '@/lib/prisma'
 import authRouter from '@/routes/auth'
 import statsRouter from '@/routes/stats'
+import { startDailySyncJob } from '@/jobs/dailySync'
 
 const app = express()
 const PORT = process.env.PORT ?? 8000
@@ -39,6 +40,7 @@ app.use('/api', statsRouter)
 
 app.listen(PORT, () => {
   logger.info({ port: PORT, env: process.env.NODE_ENV ?? 'development' }, 'server started')
+  startDailySyncJob()
 })
 
 export default app
