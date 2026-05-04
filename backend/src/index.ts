@@ -22,7 +22,7 @@ prisma.syncLog
     if (count > 0) logger.warn({ count }, 'cleared stale RUNNING sync logs on startup')
   })
   .catch((err) => logger.error({ err }, 'failed to clear stale sync logs'))
-
+//console.log
 app.use(
   cors({
     origin: process.env.FRONTEND_URL ?? 'http://localhost:3000',
